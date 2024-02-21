@@ -6,12 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+//SQL CONNECTION
+//builder.Services.AddTransient<IRepositoryEmpleados, RepositoryEmpleadosOracle>();
+//string connectionString =
+//    builder.Configuration.GetConnectionString("SqlServerHospital");
+//builder.Services.AddDbContext<HospitalContext>
+//    (options => options.UseSqlServer(connectionString));
+//ORACLE CONNECTION
+builder.Services.AddTransient<IRepositoryEmpleados
+    , RepositoryEmpleadosOracle>();
 string connectionString =
-    builder.Configuration.GetConnectionString("SqlServerHospital");
-builder.Services.AddTransient<RepositoryEmpleados>();
+    builder.Configuration.GetConnectionString("OracleHospital");
 builder.Services.AddDbContext<HospitalContext>
-    (options => options.UseSqlServer(connectionString));
+    (options => options.UseOracle(connectionString
+    , options => options.UseOracleSQLCompatibility("11")));
 
 var app = builder.Build();
 

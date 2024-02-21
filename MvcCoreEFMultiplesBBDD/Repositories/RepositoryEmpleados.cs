@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MvcCoreEFMultiplesBBDD.Data;
 using MvcCoreEFMultiplesBBDD.Models;
 
-#region VIEW
+#region VIEWS Y PROCEDURES
 
 //create view v_empleados
 //as
@@ -15,11 +15,16 @@ using MvcCoreEFMultiplesBBDD.Models;
 //	on EMP.DEPT_NO=DEPT.DEPT_NO
 //go
 
+//create procedure SP_ALL_EMPLEADOS
+//as
+//	select * from v_empleados
+//go
+
 #endregion
 
 namespace MvcCoreEFMultiplesBBDD.Repositories
 {
-    public class RepositoryEmpleados
+    public class RepositoryEmpleados: IRepositoryEmpleados
     {
         private HospitalContext context;
 
@@ -30,8 +35,9 @@ namespace MvcCoreEFMultiplesBBDD.Repositories
 
         public async Task<List<EmpleadoView>> GetEmpleadosAsync()
         {
-            var consulta = from datos in this.context.EmpleadosView
-                           select datos;
+            string sql = "SP_ALL_EMPLEADOS";
+            var consulta = this.context.EmpleadosView
+                .FromSqlRaw(sql);
             return await consulta.ToListAsync();
         }
 
