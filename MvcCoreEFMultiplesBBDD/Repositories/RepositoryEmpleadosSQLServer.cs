@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MvcCoreEFMultiplesBBDD.Data;
 using MvcCoreEFMultiplesBBDD.Models;
@@ -20,15 +21,22 @@ using MvcCoreEFMultiplesBBDD.Models;
 //	select * from v_empleados
 //go
 
+//create procedure SP_DETAILS_EMPLEADO
+//(@idempleado int)
+//as
+//	select * from v_empleados 
+//	where EMP_NO=@idempleado
+//go
+
 #endregion
 
 namespace MvcCoreEFMultiplesBBDD.Repositories
 {
-    public class RepositoryEmpleados: IRepositoryEmpleados
+    public class RepositoryEmpleadosSQLServer: IRepositoryEmpleados
     {
         private HospitalContext context;
 
-        public RepositoryEmpleados(HospitalContext context)
+        public RepositoryEmpleadosSQLServer(HospitalContext context)
         {
             this.context = context;
         }
@@ -43,10 +51,12 @@ namespace MvcCoreEFMultiplesBBDD.Repositories
 
         public async Task<EmpleadoView> FindEmpleadoAsync(int idEmpleado)
         {
-            var consulta = from datos in this.context.EmpleadosView
-                           where datos.IdEmpleado == idEmpleado
-                           select datos;
-            return await consulta.FirstOrDefaultAsync();
+            string sql = "SP_DETAILS_EMPLEADO @idempleado";
+            SqlParameter pamId = new SqlParameter("@idempleado", idEmpleado);
+            var consulta = this.context.EmpleadosView
+                .FromSqlRaw(sql, pamId);
+            EmpleadoView empleado = consulta.AsEnumerable().FirstOrDefault();
+            return empleado;
         }
     }
 }

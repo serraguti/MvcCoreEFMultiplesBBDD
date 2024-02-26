@@ -7,19 +7,28 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 //SQL CONNECTION
-//builder.Services.AddTransient<IRepositoryEmpleados, RepositoryEmpleadosOracle>();
+//builder.Services.AddTransient<IRepositoryEmpleados, RepositoryEmpleadosSQLServer>();
 //string connectionString =
 //    builder.Configuration.GetConnectionString("SqlServerHospital");
 //builder.Services.AddDbContext<HospitalContext>
 //    (options => options.UseSqlServer(connectionString));
 //ORACLE CONNECTION
-builder.Services.AddTransient<IRepositoryEmpleados
-    , RepositoryEmpleadosOracle>();
-string connectionString =
-    builder.Configuration.GetConnectionString("OracleHospital");
-builder.Services.AddDbContext<HospitalContext>
-    (options => options.UseOracle(connectionString
-    , options => options.UseOracleSQLCompatibility("11")));
+//builder.Services.AddTransient<IRepositoryEmpleados
+//    , RepositoryEmpleadosOracle>();
+//string connectionString =
+//    builder.Configuration.GetConnectionString("OracleHospital");
+//builder.Services.AddDbContext<HospitalContext>
+//    (options => options.UseOracle(connectionString
+//    , options => options.UseOracleSQLCompatibility("11")));
+//MYSQL CONNECTION
+builder.Services.AddTransient<IRepositoryEmpleados, RepositoryEmpleadosMySql>();
+string connectionString = 
+    builder.Configuration.GetConnectionString("MySqlHospital");
+//CON MYSQL ES CASI IGUAL, EN LUGAR DE UTILIZAR AddDbContext, SE UTILIZA 
+//EL METODO AddDbContextPool
+builder.Services.AddDbContextPool<HospitalContext>
+    (options => options.UseMySql(connectionString
+    , ServerVersion.AutoDetect(connectionString)));
 
 var app = builder.Build();
 
